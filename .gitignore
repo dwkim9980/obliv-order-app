@@ -48,3 +48,10 @@ next-env.d.ts
 
 # uploaded attachments
 /uploads
+
+# local logs/scratch
+dev_out.log
+dev_err.log
+test-*.mjs
+.claude/launch.json
+.claude/settings.local.json
