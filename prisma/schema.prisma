@@ -1,0 +1,145 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Role: "ADMIN" | "DEPARTMENT"
+// OrderStatus: "PENDING" | "ORDERED" | "HOLD" | "CLOSED" | "RETURNED" (대기/주문/보류/마감/반품)
+// 조직 구조: 지점(Branch, 예: 종로/송도) > 센터(Center, 예: 피부/헤어스파/롱레스트/풋케어/도수) > 부서(Department)
+
+model Branch {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  centers   Center[]
+  createdAt DateTime @default(now())
+}
+
+model Center {
+  id          String       @id @default(cuid())
+  name        String
+  address     String? // 명함에 들어가는 센터 주소
+  branch      Branch       @relation(fields: [branchId], references: [id], onDelete: Cascade)
+  branchId    String
+  departments Department[]
+  createdAt   DateTime     @default(now())
+
+  @@unique([branchId, name])
+}
+
+model Department {
+  id           String   @id @default(cuid())
+  name         String
+  snackEnabled Boolean  @default(false)
+  center       Center   @relation(fields: [centerId], references: [id], onDelete: Cascade)
+  centerId     String
+  users        User[]
+  orders       Order[]
+  budgets      Budget[]
+  cardRequests CardRequest[]
+  createdAt    DateTime @default(now())
+
+  @@unique([centerId, name])
+}
+
+// Budget.category: "GENERAL" | "SNACK"
+model Budget {
+  id           String     @id @default(cuid())
+  department   Department @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  departmentId String
+  yearMonth    String // "YYYY-MM"
+  category     String     @default("GENERAL")
+  amount       Int
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([departmentId, yearMonth, category])
+}
+
+model User {
+  id           String      @id @default(cuid())
+  username     String      @unique
+  passwordHash String
+  name         String
+  role         String
+  department   Department? @relation(fields: [departmentId], references: [id])
+  departmentId String?
+  orders       Order[]
+  cardRequests CardRequest[]
+  createdAt    DateTime    @default(now())
+}
+
+model Order {
+  id           String     @id @default(cuid())
+  itemName     String
+  quantity     Int
+  option       String?
+  price        Int
+  purchaseLink String?
+  status       String     @default("PENDING")
+  comment      String?
+  commentAcknowledged Boolean @default(false)
+  isSnack      Boolean    @default(false)
+  isOrdered    Boolean    @default(false)
+  department   Department @relation(fields: [departmentId], references: [id])
+  departmentId String
+  requester    User       @relation(fields: [requesterId], references: [id])
+  requesterId  String
+  requestedAt  DateTime   @default(now())
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  attachments  Attachment[]
+}
+
+model Attachment {
+  id           String   @id @default(cuid())
+  order        Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  orderId      String
+  fileName     String
+  originalName String
+  mimeType     String
+  size         Int
+  uploadedById String
+  createdAt    DateTime @default(now())
+}
+
+// Notice.scope: "ALL" | "BRANCH" | "CENTER"
+model Notice {
+  id        String   @id @default(cuid())
+  title     String
+  content   String
+  scope     String   @default("ALL")
+  branchId  String?
+  centerId  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// CardRequestField.formType / CardRequest.formType: "NAMETAG" | "BUSINESSCARD" (명찰/명함)
+// CardRequest.status: "PENDING" | "ORDERED" (대기/발주완료)
+
+model CardRequestField {
+  id        String   @id @default(cuid())
+  formType  String
+  label     String
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+}
+
+model CardRequest {
+  id            String     @id @default(cuid())
+  formType      String
+  quantity      Int        @default(1)
+  values        String // JSON: [{ "label": string, "value": string }] 제출 시점 스냅샷
+  centerAddress String? // BUSINESSCARD 제출 시점의 센터 주소 스냅샷
+  status        String     @default("PENDING")
+  department    Department @relation(fields: [departmentId], references: [id])
+  departmentId  String
+  requester     User       @relation(fields: [requesterId], references: [id])
+  requesterId   String
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+}
