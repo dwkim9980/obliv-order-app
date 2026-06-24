@@ -289,6 +289,9 @@ export default function AdminOrdersClient() {
   const selectedBranch = branches.find((b) => b.id === branchId);
   const selectedCenter = selectedBranch?.centers.find((c) => c.id === centerId);
   const totalAmount = orders.reduce((sum, o) => sum + o.price, 0);
+  const selectedAmount = orders
+    .filter((o) => selected.has(o.id))
+    .reduce((sum, o) => sum + o.price, 0);
   const selectedOrdersForModal = orders.filter((o) => o.id in qtyDrafts);
 
   function handleSortClick(colId: string) {
@@ -581,6 +584,11 @@ export default function AdminOrdersClient() {
         <div className="mb-4 flex items-center justify-between">
           <p className="text-sm text-gray-600">
             총 {orders.length}건 · 합계 {totalAmount.toLocaleString()}원
+            {selected.size > 0 && (
+              <span className="ml-2 text-blue-700">
+                · 선택 {selected.size}건 합계 {selectedAmount.toLocaleString()}원
+              </span>
+            )}
           </p>
           <button onClick={resetLayout} className="text-xs text-gray-500 hover:underline">
             열 배치 초기화

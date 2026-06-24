@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
   const to = searchParams.get("to"); // YYYY-MM-DD
   const month = searchParams.get("month"); // YYYY-MM (legacy fallback)
 
-  const where: any = {};
+  const where: any = { status: "ORDERED" };
   if (from || to) {
     where.requestedAt = {};
     if (from) where.requestedAt.gte = new Date(from);
