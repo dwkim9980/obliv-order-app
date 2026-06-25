@@ -1,6 +1,6 @@
 {
   "name": "purchase-order-app",
-  "version": "0.1.0",
+  "version": "0.9.6",
   "private": true,
   "scripts": {
     "dev": "next dev",

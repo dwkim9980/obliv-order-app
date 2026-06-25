@@ -47,7 +47,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50">
+    <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-gray-50">
       <form
         onSubmit={handleSubmit}
         className="w-full max-w-sm space-y-4 rounded-xl border border-gray-200 bg-white p-8 shadow-sm"
@@ -96,7 +96,7 @@ export default function LoginPage() {
           {loading ? "로그인 중..." : "로그인"}
         </button>
       </form>
-      <span className="fixed bottom-3 right-3 text-xs text-gray-400">{APP_VERSION}</span>
+      <span className="text-xs text-gray-400">{APP_VERSION}</span>
     </div>
   );
 }
