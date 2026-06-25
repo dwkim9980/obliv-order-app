@@ -195,7 +195,7 @@ export default function OrderHistoryClient() {
                       </td>
                       <td className="py-2 pr-3 text-xs text-gray-500">{o.comment || "-"}</td>
                       <td className="py-2 pr-3">
-                        {o.status === "CLOSED" ? (
+                        {o.status === "ORDERED" ? (
                           <input
                             type="checkbox"
                             checked={o.arrivalConfirmed}

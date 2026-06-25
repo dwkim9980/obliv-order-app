@@ -27,7 +27,7 @@ export async function GET(req: NextRequest) {
     if (!user.departmentId) return NextResponse.json([], { status: 200 });
     where.departmentId = user.departmentId;
     if (scope === "active" || !scope) {
-      where.status = { in: ["PENDING", "ORDERED", "HOLD"] };
+      where.status = "PENDING";
     }
   } else {
     if (departmentId) where.departmentId = departmentId;

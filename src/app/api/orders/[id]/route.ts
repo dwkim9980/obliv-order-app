@@ -61,9 +61,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     if (body.commentAcknowledged !== undefined) {
       data.commentAcknowledged = Boolean(body.commentAcknowledged);
     } else if (body.arrivalConfirmed !== undefined) {
-      if (order.status !== "CLOSED") {
+      if (order.status !== "ORDERED") {
         return NextResponse.json(
-          { error: "마감 처리된 항목만 도착확인할 수 있습니다." },
+          { error: "주문 처리된 항목만 도착확인할 수 있습니다." },
           { status: 400 }
         );
       }
