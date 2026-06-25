@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { APP_VERSION } from "@/lib/version";
 
 const SAVED_USERNAME_KEY = "savedUsername";
 
@@ -95,6 +96,7 @@ export default function LoginPage() {
           {loading ? "로그인 중..." : "로그인"}
         </button>
       </form>
+      <span className="fixed bottom-3 right-3 text-xs text-gray-400">{APP_VERSION}</span>
     </div>
   );
 }

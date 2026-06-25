@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { APP_VERSION } from "@/lib/version";
 
 function NavLink({
   href,
@@ -125,6 +126,7 @@ export default function NavBar({
         >
           로그아웃
         </button>
+        <span className="text-xs text-gray-400">{APP_VERSION}</span>
       </div>
     </header>
   );
