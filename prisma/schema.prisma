@@ -82,6 +82,7 @@ model Order {
   status       String     @default("PENDING")
   comment      String?
   commentAcknowledged Boolean @default(false)
+  arrivalConfirmed Boolean @default(false)
   isSnack      Boolean    @default(false)
   isOrdered    Boolean    @default(false)
   department   Department @relation(fields: [departmentId], references: [id])

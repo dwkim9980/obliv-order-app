@@ -60,6 +60,14 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     // DEPARTMENT
     if (body.commentAcknowledged !== undefined) {
       data.commentAcknowledged = Boolean(body.commentAcknowledged);
+    } else if (body.arrivalConfirmed !== undefined) {
+      if (order.status !== "CLOSED") {
+        return NextResponse.json(
+          { error: "마감 처리된 항목만 도착확인할 수 있습니다." },
+          { status: 400 }
+        );
+      }
+      data.arrivalConfirmed = Boolean(body.arrivalConfirmed);
     } else if (body.status !== undefined) {
       if (body.status !== "RETURNED") {
         return NextResponse.json({ error: "해당 상태로 변경할 권한이 없습니다." }, { status: 403 });

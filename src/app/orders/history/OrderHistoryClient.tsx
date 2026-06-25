@@ -19,6 +19,7 @@ type Order = {
   status: string;
   comment: string | null;
   isSnack: boolean;
+  arrivalConfirmed: boolean;
   requestedAt: string;
   requester: { name: string };
   attachments: Attachment[];
@@ -55,6 +56,20 @@ export default function OrderHistoryClient() {
   useEffect(() => {
     load();
   }, [load]);
+
+  async function handleArrivalConfirm(id: string, checked: boolean) {
+    const res = await fetch(`/api/orders/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ arrivalConfirmed: checked }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      alert(data.error || "도착확인 처리에 실패했습니다.");
+      return;
+    }
+    load();
+  }
 
   async function handleReturn(id: string) {
     if (!confirm("이 항목을 반품 처리할까요?")) return;
@@ -112,7 +127,8 @@ export default function OrderHistoryClient() {
                 <col style={{ width: "7%" }} />
                 <col style={{ width: "5%" }} />
                 <col style={{ width: "8%" }} />
-                <col style={{ width: "14%" }} />
+                <col style={{ width: "7%" }} />
+                <col style={{ width: "11%" }} />
                 <col style={{ width: "4%" }} />
                 <col style={{ width: "4%" }} />
               </colgroup>
@@ -128,6 +144,7 @@ export default function OrderHistoryClient() {
                   <th className="py-2 pr-3">링크</th>
                   <th className="py-2 pr-3">상태</th>
                   <th className="py-2 pr-3">코멘트</th>
+                  <th className="py-2 pr-3">도착확인</th>
                   <th className="py-2 pr-3"></th>
                   <th className="py-2 pr-3"></th>
                 </tr>
@@ -177,6 +194,17 @@ export default function OrderHistoryClient() {
                         </span>
                       </td>
                       <td className="py-2 pr-3 text-xs text-gray-500">{o.comment || "-"}</td>
+                      <td className="py-2 pr-3">
+                        {o.status === "CLOSED" ? (
+                          <input
+                            type="checkbox"
+                            checked={o.arrivalConfirmed}
+                            onChange={(e) => handleArrivalConfirm(o.id, e.target.checked)}
+                          />
+                        ) : (
+                          "-"
+                        )}
+                      </td>
                       <td className="py-2 pr-3">
                         <button
                           onClick={() => handleReturn(o.id)}
