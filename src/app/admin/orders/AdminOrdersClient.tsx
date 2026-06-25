@@ -30,7 +30,7 @@ type Order = {
 
 const STATUS_LABEL: Record<string, string> = {
   PENDING: "대기",
-  ORDERED: "주문",
+  ORDERED: "발주완료",
   HOLD: "보류",
   CLOSED: "마감",
   RETURNED: "반품",
@@ -179,7 +179,7 @@ export default function AdminOrdersClient() {
 
   async function handleBulk(status: "ORDERED" | "CLOSED") {
     if (selected.size === 0) return;
-    const label = status === "ORDERED" ? "주문" : "마감";
+    const label = status === "ORDERED" ? "발주완료" : "마감";
     if (!confirm(`선택한 ${selected.size}건을 '${label}' 상태로 일괄 변경할까요?`)) return;
     const res = await fetch("/api/orders/bulk", {
       method: "PATCH",

@@ -5,7 +5,7 @@ import { requireAdmin } from "@/lib/adminGuard";
 
 const STATUS_LABEL: Record<string, string> = {
   PENDING: "대기",
-  ORDERED: "주문",
+  ORDERED: "발주완료",
   HOLD: "보류",
   CLOSED: "마감",
   RETURNED: "반품",
