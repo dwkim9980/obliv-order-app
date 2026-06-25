@@ -56,6 +56,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
       data.price = n;
     }
     if (body.purchaseLink !== undefined) data.purchaseLink = body.purchaseLink || null;
+    if (body.arrivalConfirmed !== undefined) {
+      data.arrivalConfirmed = Boolean(body.arrivalConfirmed);
+    }
   } else {
     // DEPARTMENT
     if (body.commentAcknowledged !== undefined) {

@@ -21,6 +21,7 @@ type Order = {
   status: string;
   comment: string | null;
   isSnack: boolean;
+  arrivalConfirmed: boolean;
   requestedAt: string;
   department: { name: string; center: { name: string; branch: { name: string } } };
   requester: { name: string };
@@ -50,6 +51,7 @@ const ORDER_COLUMNS = [
   { id: "vendor", label: "구매처", width: 80 },
   { id: "link", label: "링크", width: 60 },
   { id: "status", label: "상태", width: 110 },
+  { id: "arrival", label: "도착확인", width: 70 },
   { id: "comment", label: "코멘트", width: 140 },
 ];
 
@@ -60,10 +62,10 @@ export default function AdminOrdersClient() {
   const [branchId, setBranchId] = useState("");
   const [centerId, setCenterId] = useState("");
   const [departmentId, setDepartmentId] = useState("");
-  const [from, setFrom] = useState("");
-  const [to, setTo] = useState("");
+  const [from, setFrom] = useState(() => formatDate(new Date(Date.now() - 13 * 86400000)));
+  const [to, setTo] = useState(() => formatDate(new Date()));
   const [isSnackFilter, setIsSnackFilter] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState("PENDING");
   const [sortBy, setSortBy] = useState<string | null>(null);
   const [sortDir, setSortDir] = useState<"asc" | "desc" | null>(null);
   const [selected, setSelected] = useState<Set<string>>(new Set());
@@ -113,6 +115,20 @@ export default function AdminOrdersClient() {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ status, ...(comment ? { comment } : {}) }),
+    });
+    if (!res.ok) {
+      const data = await res.json().catch(() => ({}));
+      alert(data.error || "변경에 실패했습니다.");
+      return;
+    }
+    load();
+  }
+
+  async function handleArrivalToggle(id: string, checked: boolean) {
+    const res = await fetch(`/api/orders/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ arrivalConfirmed: checked }),
     });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
@@ -328,6 +344,8 @@ export default function AdminOrdersClient() {
         return detectVendor(o.purchaseLink);
       case "status":
         return STATUS_LABEL[o.status] ?? o.status;
+      case "arrival":
+        return o.arrivalConfirmed ? 1 : 0;
       case "comment":
         return o.comment || "";
       default:
@@ -408,6 +426,16 @@ export default function AdminOrdersClient() {
               </option>
             ))}
           </select>
+        );
+      case "arrival":
+        return o.status === "ORDERED" || o.arrivalConfirmed ? (
+          <input
+            type="checkbox"
+            checked={o.arrivalConfirmed}
+            onChange={(e) => handleArrivalToggle(o.id, e.target.checked)}
+          />
+        ) : (
+          "-"
         );
       case "comment":
         return (
