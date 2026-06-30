@@ -211,6 +211,8 @@ export default function AdminOrdersClient() {
     else if (branchId) params.set("branchId", branchId);
     if (from) params.set("from", from);
     if (to) params.set("to", to);
+    if (statusFilter) params.set("status", statusFilter);
+    if (isSnackFilter) params.set("isSnack", isSnackFilter);
     window.location.href = `/api/admin/export?${params.toString()}`;
   }
 

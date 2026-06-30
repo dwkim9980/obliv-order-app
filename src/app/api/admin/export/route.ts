@@ -21,11 +21,15 @@ export async function GET(req: NextRequest) {
   const branchId = searchParams.get("branchId");
   const centerId = searchParams.get("centerId");
   const departmentId = searchParams.get("departmentId");
+  const status = searchParams.get("status");
+  const isSnack = searchParams.get("isSnack");
 
   const where: any = {};
   if (departmentId) where.departmentId = departmentId;
   else if (centerId) where.department = { centerId };
   else if (branchId) where.department = { center: { branchId } };
+  if (status) where.status = status;
+  if (isSnack !== null && isSnack !== "") where.isSnack = isSnack === "true";
 
   if (from || to) {
     where.requestedAt = {};
